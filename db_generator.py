@@ -87,7 +87,9 @@ for i in range(NUM_ROWS):
     # Time Calculations
     o_date = start_date + timedelta(days=random.randint(0, 19), hours=random.randint(8, 22), minutes=random.randint(0, 59))
     promised_time = o_date + timedelta(minutes=15)
-    status = random.choices(["On Time", "Delayed", "Cancelled"], weights=[75, 20, 5])[0]
+    # Ensure the random weights are filled in like this:
+    status = random.choices(["On Time", "Delayed", "Cancelled"], weights=[0.70, 0.20, 0.10])[0]
+
     
     if status == "On Time":
         actual_time = o_date + timedelta(minutes=random.randint(8, 14))
