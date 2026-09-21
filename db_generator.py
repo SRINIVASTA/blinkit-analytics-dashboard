@@ -88,7 +88,9 @@ for i in range(NUM_ROWS):
     o_date = start_date + timedelta(days=random.randint(0, 19), hours=random.randint(8, 22), minutes=random.randint(0, 59))
     promised_time = o_date + timedelta(minutes=15)
     # Ensure the random weights are filled in like this:
-    status = random.choices(["On Time", "Delayed", "Cancelled"], weights=[0.70, 0.20, 0.10])[0]
+    # Change from: weights=
+    status = random.choices(["On Time", "Delayed", "Cancelled"], weights=[0.75, 0.20, 0.05])[0]
+
 
     
     if status == "On Time":
@@ -124,7 +126,7 @@ for i in range(NUM_ROWS):
 
     # Insert Order Item
     qty = random.randint(1, 4)
-    u_price = random.choice([20, 50, 80, 120, 250])
+    u_price = random.choice([40, 60, 120, 250, 450])
     cursor.execute("""
         INSERT INTO blinkit_order_items (order_id, product_id, quantity, unit_price, total_price) 
         VALUES (?, ?, ?, ?, ?);
