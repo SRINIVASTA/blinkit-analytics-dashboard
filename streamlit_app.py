@@ -4,31 +4,24 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
-# Helper to locate database accurately
+# --- AUTOMATED DATABASE CHECK ---
+BASE_DIR = os.path.dirname(__file__) if "__file__" in locals() else "."
+DB_PATH = os.path.join(BASE_DIR, "data", "blinkit.db")
+
+if not os.path.exists(DB_PATH):
+    st.info("Database file not found. Generating fresh mock tables on server...")
+    try:
+        import db_generator
+        st.success("Successfully generated blinkit.db with 100 rows!")
+    except Exception as e:
+        st.error(f"Failed to auto-generate mock database: {e}")
+# --------------------------------
+
 def get_db_connection():
-    base_dir = os.path.dirname(__file__) if "__file__" in locals() else "."
-    db_path = os.path.join(base_dir, "data", "blinkit.db")
-    return sqlite3.connect(db_path)
+    return sqlite3.connect(DB_PATH)
 
 def run_query(sql):
     conn = get_db_connection()
-    # Read raw SQL results straight into a Pandas DataFrame
     df = pd.read_sql_query(sql, conn)
     conn.close()
     return df
-
-@st.cache_data(ttl=600, show_spinner="Querying SQLite Orders...")
-def load_orders():
-    df = run_query("SELECT * FROM blinkit_orders;")
-    df["order_date"] = pd.to_datetime(df["order_date"])
-    df["order_total"] = pd.to_numeric(df["order_total"], errors="coerce")
-    return df
-
-@st.cache_data(ttl=600, show_spinner="Querying SQLite Deliveries...")
-def load_delivery():
-    df = run_query("SELECT * FROM blinkit_delivery_performance;")
-    df["distance_km"] = pd.to_numeric(df["distance_km"], errors="coerce")
-    df["delivery_time_minutes"] = pd.to_numeric(df["delivery_time_minutes"], errors="coerce")
-    return df
-
-# ... (Keep the rest of load_order_items, load_marketing, and visual rendering tabs unchanged)
